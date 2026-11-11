@@ -33,3 +33,8 @@ dist/
 # agent runtime
 agent/logs/
 agent/approvals/
+
+# rendered demo video segments
+demo/frames/
+demo/segments/
+demo/audio/

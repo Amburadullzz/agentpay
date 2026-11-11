@@ -143,6 +143,8 @@ Connect an owner wallet to pause the vault or sign approvals.
 | 4 | Replay of invoice #1 | reverts `AlreadyPaid` |
 | 5 | Vault paused, invoice arrives | refused `VAULT_PAUSED`; after resume the same invoice pays |
 
+**Video walkthrough (2:58):** [`demo/agentpay-demo.mp4`](demo/agentpay-demo.mp4) — narrated, built from the real testnet run.
+
 Full script and judge-facing checklist: [`docs/DEMO-AND-SUBMISSION.md`](docs/DEMO-AND-SUBMISSION.md)
 
 ## Assumptions and limitations
