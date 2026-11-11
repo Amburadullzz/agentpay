@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AgentPay — policy-bound payments for AI agents</title>
+<style>
+  :root {
+    --bg: #0b1020;
+    --panel: #131a2e;
+    --panel-2: #182238;
+    --line: #26324e;
+    --text: #e8eefc;
+    --muted: #8fa0c4;
+    --green: #4ade80;
+    --red: #f87171;
+    --amber: #fbbf24;
+    --blue: #4c8dff;
+    --violet: #a78bfa;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.5 ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  a { color: var(--blue); text-decoration: none; }
+  header {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    padding: 18px 24px; border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, #101830, #0b1020);
+  }
+  header h1 { font-size: 18px; margin: 0; letter-spacing: -0.2px; }
+  .badge {
+    font-size: 12px; padding: 3px 9px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--muted);
+  }
+  .badge.ok { color: var(--green); border-color: #1e4630; background: #0f2418; }
+  .badge.bad { color: var(--red); border-color: #4a1f24; background: #2a1216; }
+  .spacer { flex: 1; }
+  main { display: grid; grid-template-columns: 320px 1fr 320px; gap: 16px; padding: 16px 24px 40px; }
+  @media (max-width: 1100px) { main { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 16px;
+  }
+  .card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); margin: 0 0 12px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px dashed #1e2740; }
+  .row:last-child { border-bottom: 0; }
+  .row .k { color: var(--muted); }
+  .row .v { font-variant-numeric: tabular-nums; }
+  .big { font-size: 26px; font-weight: 650; letter-spacing: -0.5px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  th { color: var(--muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .pill { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .pill.paid { color: var(--green); border-color: #1e4630; background: #0f2418; }
+  .pill.open { color: var(--amber); border-color: #4a3a12; background: #241d0f; }
+  .pill.refused { color: var(--red); border-color: #4a1f24; background: #2a1216; }
+  button {
+    font: inherit; font-size: 13px; padding: 8px 14px; border-radius: 10px; cursor: pointer;
+    background: #1c2942; color: var(--text); border: 1px solid #2c3d5f;
+  }
+  button:hover { background: #22304d; }
+  button.primary { background: #1d4ed8; border-color: #2563eb; }
+  button.danger { background: #7f1d1d; border-color: #991b1b; }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .log { font-size: 13px; max-height: 420px; overflow: auto; }
+  .log div { padding: 7px 0; border-bottom: 1px dashed #1e2740; color: var(--muted); }
+  .log b { color: var(--text); font-weight: 550; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
+  .muted { color: var(--muted); }
+  .err { color: var(--red); font-size: 13px; margin-top: 10px; }
+  footer { padding: 0 24px 32px; color: #5b6b8c; font-size: 12.5px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>AgentPay</h1>
+  <span class="badge" id="chain">QDay Aevum · 44005</span>
+  <span class="badge" id="pauseBadge">…</span>
+  <span class="spacer"></span>
+  <span class="badge mono" id="ownerAddr">owner: —</span>
+  <button id="connect">Connect wallet</button>
+</header>
+
+<main>
+  <section class="card">
+    <h2>Mandate</h2>
+    <div class="big" id="spentToday">—</div>
+    <div class="muted" id="dailyCap">of — daily budget</div>
+    <div style="margin-top:14px">
+      <div class="row"><span class="k">per payment</span><span class="v" id="perTx">—</span></div>
+      <div class="row"><span class="k">needs approval above</span><span class="v" id="threshold">—</span></div>
+      <div class="row"><span class="k">session expires</span><span class="v" id="expiry">—</span></div>
+      <div class="row"><span class="k">vault balance</span><span class="v" id="vaultBal">—</span></div>
+      <div class="row"><span class="k">agent</span><span class="v mono" id="agentAddr">—</span></div>
+    </div>
+    <div class="actions">
+      <button id="pause" class="danger" disabled>Pause vault</button>
+      <button id="unpause" disabled>Resume</button>
+    </div>
+    <div class="err" id="ownerErr"></div>
+  </section>
+
+  <section class="card">
+    <h2>Invoices</h2>
+    <table>
+      <thead>
+        <tr><th>#</th><th>Payee</th><th class="num">Amount</th><th>State</th><th>Receipt</th><th></th></tr>
+      </thead>
+      <tbody id="invoices"><tr><td colspan="6" class="muted">loading…</td></tr></tbody>
+    </table>
+    <div class="err" id="txErr"></div>
+  </section>
+
+  <section class="card">
+    <h2>On-chain audit trail</h2>
+    <div class="log" id="log"><div class="muted">loading…</div></div>
+  </section>
+</main>
+
+<footer>
+  Every limit on this page is enforced by the contract, not by the agent. A compromised agent can only
+  spend inside the mandate — caps, allowlist, one payment per invoice, approval threshold, expiry and
+  the pause switch are all on-chain.
+</footer>
+
+<script type="module">
+import { createPublicClient, createWalletClient, custom, http, parseAbi, formatUnits } from "https://esm.sh/viem@2.21.45";
+
+const CHAIN = {
+  id: 44005,
+  name: "QDay Aevum Testnet",
+  nativeCurrency: { name: "tQDAY", symbol: "tQDAY", decimals: 18 },
+  rpcUrls: { default: { http: ["https://rpc-test.qday.info"] } },
+  blockExplorers: { default: { name: "QDay Explorer", url: "https://explorer-test.qday.info" } },
+};
+
+const ADDRESSES = {
+  vault: "0x3438513Ca98021c976D07D4584Ea6742eF2E5B22",
+  registry: "0x8F4Fd4Df4e77DaC2BEdA80Aa7193322D658401C8",
+  receipts: "0x4bf8b703715e8BC777e3D51D9B20d4C09c07981a",
+  token: "0x456569838f1d43009A91ebA4263147Afd7233483",
+  agent: "0x466895bBD324A28e6271C1d7CC0E877a7659aF89",
+};
+
+const VAULT_ABI = parseAbi([
+  "function mandateOf(address) view returns (bool active, uint96 perTxCap, uint96 dailyCap, uint96 approvalThreshold, uint64 validUntil, uint64 dayStart, uint96 daySpent, uint32 nonce)",
+  "function paused() view returns (bool)",
+  "function pause()",
+  "function unpause()",
+  "function payWithApproval(uint256 invoiceId, uint256 deadline, bytes sig)",
+  "function approvalDigest(uint256 invoiceId, uint256 amount, address payee, uint256 nonce, uint256 deadline) view returns (bytes32)",
+  "event Paid(uint256 indexed invoiceId, address indexed agent, address indexed payee, uint96 amount)",
+  "event ApprovalUsed(uint256 indexed invoiceId, uint32 nonce)",
+  "event PausedBy(address indexed who)",
+  "event UnpausedBy(address indexed who)",
+]);
+
+const REGISTRY_ABI = parseAbi([
+  "function invoiceCount() view returns (uint256)",
+  "function getInvoice(uint256) view returns ((address issuer, address payee, uint96 amount, bytes32 memoHash, uint64 dueAt, bool paid, bool cancelled))",
+  "event InvoiceCreated(uint256 indexed id, address indexed issuer, address indexed payee, uint96 amount, bytes32 memoHash, uint64 dueAt)",
+]);
+
+const TOKEN_ABI = parseAbi(["function balanceOf(address) view returns (uint256)"]);
+const RECEIPT_ABI = parseAbi(["function balanceOf(address) view returns (uint256)"]);
+
+const client = createPublicClient({ chain: CHAIN, transport: http() });
+let wallet = null;
+let account = null;
+
+const $ = (id) => document.getElementById(id);
+const fmt = (raw) => Number(formatUnits(raw, 6)).toFixed(2).replace(/\.00$/, "");
+const short = (a) => `${a.slice(0, 6)}…${a.slice(-4)}`;
+
+async function loadState() {
+  const [mandate, paused, count, vaultBal] = await Promise.all([
+    client.readContract({ address: ADDRESSES.vault, abi: VAULT_ABI, functionName: "mandateOf", args: [ADDRESSES.agent] }),
+    client.readContract({ address: ADDRESSES.vault, abi: VAULT_ABI, functionName: "paused" }),
+    client.readContract({ address: ADDRESSES.registry, abi: REGISTRY_ABI, functionName: "invoiceCount" }),
+    client.readContract({ address: ADDRESSES.token, abi: TOKEN_ABI, functionName: "balanceOf", args: [ADDRESSES.vault] }),
+  ]);
+
+  const [active, perTxCap, dailyCap, threshold, validUntil, , daySpent] = mandate;
+
+  $("spentToday").textContent = `${fmt(daySpent)} tUSD8`;
+  $("dailyCap").textContent = `of ${fmt(dailyCap)} daily budget`;
+  $("perTx").textContent = `${fmt(perTxCap)} tUSD8`;
+  $("threshold").textContent = threshold === 0n ? "not required" : `${fmt(threshold)} tUSD8`;
+  $("expiry").textContent = validUntil === 0n ? "no expiry" : new Date(Number(validUntil) * 1000).toLocaleString();
+  $("vaultBal").textContent = `${fmt(vaultBal)} tUSD8`;
+  $("agentAddr").textContent = short(ADDRESSES.agent);
+  $("pauseBadge").textContent = paused ? "PAUSED" : active ? "active" : "no session";
+  $("pauseBadge").className = `badge ${paused ? "bad" : "ok"}`;
+
+  const ids = Array.from({ length: Number(count) }, (_, i) => BigInt(i + 1));
+  const invoices = await Promise.all(
+    ids.map((id) => client.readContract({ address: ADDRESSES.registry, abi: REGISTRY_ABI, functionName: "getInvoice", args: [id] }))
+  );
+
+  const rows = invoices.map((raw, i) => {
+    const id = i + 1;
+    // viem returns named tuple components as an object, unnamed ones as an array
+    const inv = Array.isArray(raw)
+      ? { payee: raw[1], amount: raw[2], paid: raw[5], cancelled: raw[6] }
+      : raw;
+    const { payee, amount, paid, cancelled } = inv;
+    const state = paid ? "paid" : cancelled ? "cancelled" : "open";
+    const needsApproval = !paid && !cancelled && threshold !== 0n && amount >= threshold;
+    return `<tr>
+      <td class="mono">#${id}</td>
+      <td class="mono">${short(payee)}</td>
+      <td class="num">${fmt(amount)}</td>
+      <td><span class="pill ${state}">${state}</span></td>
+      <td>${paid ? `<a href="${CHAIN.blockExplorers.default.url}/token/${ADDRESSES.receipts}/instance/${id}" target="_blank" rel="noreferrer">#${id}</a>` : "—"}</td>
+      <td>${needsApproval && account ? `<button data-approve="${id}" data-amount="${amount}" data-payee="${payee}">Approve &amp; pay</button>` : ""}</td>
+    </tr>`;
+  });
+  $("invoices").innerHTML = rows.join("") || `<tr><td colspan="6" class="muted">no invoices yet</td></tr>`;
+
+  document.querySelectorAll("[data-approve]").forEach((btn) =>
+    btn.addEventListener("click", () => approveAndPay(Number(btn.dataset.approve), btn.dataset.amount, btn.dataset.payee))
+  );
+
+  await loadLog().catch((err) => {
+    $("log").innerHTML = `<div class="muted">audit trail unavailable: ${String(err.shortMessage || err.message || err)}</div>`;
+  });
+}
+
+async function loadLog() {
+  // the RPC caps eth_getLogs at 1000 blocks, so scan backwards in 1000-block windows
+  const latest = await client.getBlockNumber();
+  const SPAN = 1000n;
+  const WINDOWS = 5n;
+  const ranges = [];
+  for (let i = 0n; i < WINDOWS; i++) {
+    const toBlock = latest - i * SPAN;
+    if (toBlock <= 0n) break;
+    const fromBlock = toBlock - SPAN + 1n;
+    ranges.push({ fromBlock: fromBlock < 0n ? 0n : fromBlock, toBlock });
+  }
+
+  const events = ["Paid", "ApprovalUsed", "PausedBy", "UnpausedBy"];
+  const settled = await Promise.allSettled(
+    ranges.flatMap((r) => events.map((eventName) =>
+      client.getContractEvents({ address: ADDRESSES.vault, abi: VAULT_ABI, eventName, ...r })
+    ))
+  );
+
+  const all = settled.flatMap((s) => (s.status === "fulfilled" ? s.value : []));
+  const items = all.map((e) => {
+    const a = e.args;
+    let html;
+    switch (e.eventName) {
+      case "Paid": html = `<b>Paid</b> #${a.invoiceId} · ${fmt(a.amount)} tUSD8 → ${short(a.payee)}`; break;
+      case "ApprovalUsed": html = `<b>Approval used</b> #${a.invoiceId} · nonce ${a.nonce}`; break;
+      case "PausedBy": html = `<b>Vault paused</b> by ${short(a.who)}`; break;
+      default: html = `<b>Vault resumed</b> by ${short(a.who)}`;
+    }
+    return { block: e.blockNumber, html };
+  }).sort((x, y) => Number(y.block - x.block));
+
+  $("log").innerHTML = items.map((i) => `<div>${i.html} <span class="mono">· ${i.block}</span></div>`).join("") ||
+    `<div class="muted">no events in the last ${WINDOWS * SPAN} blocks</div>`;
+}
+
+async function connect() {
+  if (!window.ethereum) {
+    $("ownerErr").textContent = "No injected wallet found. Install MetaMask or open this page in a dapp browser.";
+    return;
+  }
+  wallet = createWalletClient({ chain: CHAIN, transport: custom(window.ethereum) });
+  const [addr] = await wallet.requestAddresses();
+  account = addr;
+  $("ownerAddr").textContent = `owner: ${short(addr)}`;
+  $("pause").disabled = false;
+  $("unpause").disabled = false;
+  try {
+    await wallet.switchChain({ id: CHAIN.id });
+  } catch {
+    /* the network may already be added under another id; reads still work over http */
+  }
+  await loadState();
+}
+
+async function approveAndPay(invoiceId, amount, payee) {
+  try {
+    const mandate = await client.readContract({ address: ADDRESSES.vault, abi: VAULT_ABI, functionName: "mandateOf", args: [ADDRESSES.agent] });
+    const nonce = mandate[7];
+    const deadline = BigInt(Math.floor(Date.now() / 1000) + 3600);
+
+    const signature = await wallet.signTypedData({
+      account,
+      domain: { name: "AgentPay", version: "1", chainId: CHAIN.id, verifyingContract: ADDRESSES.vault },
+      types: {
+        Approval: [
+          { name: "invoiceId", type: "uint256" },
+          { name: "amount", type: "uint256" },
+          { name: "payee", type: "address" },
+          { name: "nonce", type: "uint256" },
+          { name: "deadline", type: "uint256" },
+        ],
+      },
+      primaryType: "Approval",
+      message: { invoiceId: BigInt(invoiceId), amount: BigInt(amount), payee, nonce: BigInt(nonce), deadline },
+    });
+
+    // the owner signs; the agent submits. In this dashboard the connected wallet submits to keep the demo short.
+    const hash = await wallet.writeContract({
+      address: ADDRESSES.vault,
+      abi: VAULT_ABI,
+      functionName: "payWithApproval",
+      args: [BigInt(invoiceId), deadline, signature],
+      account,
+    });
+    $("txErr").textContent = `approval submitted: ${hash.slice(0, 18)}…`;
+    await client.waitForTransactionReceipt({ hash });
+    await loadState();
+  } catch (err) {
+    $("txErr").textContent = String(err.shortMessage || err.message || err);
+  }
+}
+
+async function togglePause(action) {
+  try {
+    const hash = await wallet.writeContract({
+      address: ADDRESSES.vault,
+      abi: VAULT_ABI,
+      functionName: action,
+      args: [],
+      account,
+    });
+    $("ownerErr").textContent = `${action} sent: ${hash.slice(0, 18)}…`;
+    await client.waitForTransactionReceipt({ hash });
+    await loadState();
+  } catch (err) {
+    $("ownerErr").textContent = String(err.shortMessage || err.message || err);
+  }
+}
+
+$("connect").addEventListener("click", connect);
+$("pause").addEventListener("click", () => togglePause("pause"));
+$("unpause").addEventListener("click", () => togglePause("unpause"));
+
+loadState().catch((err) => {
+  $("invoices").innerHTML = `<tr><td colspan="6" class="err">${String(err.message || err)}</td></tr>`;
+});
+setInterval(() => loadState().catch(() => {}), 15000);
+</script>
+</body>
+</html>

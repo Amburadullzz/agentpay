@@ -1,0 +1,23 @@
+{
+  "chainId": 44005,
+  "network": "QDay Aevum Testnet",
+  "deployer": "0x466895bBD324A28e6271C1d7CC0E877a7659aF89",
+  "deployTx": "https://explorer-test.qday.info/tx/0x76ea4874dd2708a85c53dbe399bf3436bd8b1739818b7132b7fd225f399b3713",
+  "contracts": {
+    "vault": {
+      "address": "0x3438513Ca98021c976D07D4584Ea6742eF2E5B22",
+      "explorer": "https://explorer-test.qday.info/address/0x3438513Ca98021c976D07D4584Ea6742eF2E5B22"
+    },
+    "registry": {
+      "address": "0x8F4Fd4Df4e77DaC2BEdA80Aa7193322D658401C8",
+      "explorer": "https://explorer-test.qday.info/address/0x8F4Fd4Df4e77DaC2BEdA80Aa7193322D658401C8"
+    },
+    "receipts": {
+      "address": "0x4bf8b703715e8BC777e3D51D9B20d4C09c07981a",
+      "explorer": "https://explorer-test.qday.info/address/0x4bf8b703715e8BC777e3D51D9B20d4C09c07981a"
+    }
+  },
+  "token": {
+    "address": "0x456569838f1d43009A91ebA4263147Afd7233483"
+  }
+}

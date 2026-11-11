@@ -1,0 +1,35 @@
+# foundry
+out/
+cache/
+broadcast/
+lib/
+
+# env & keys — never commit
+.env
+.env.*
+*.key
+*.pem
+wallets/
+keys/
+deployments/*.local.json
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# node
+node_modules/
+.next/
+dist/
+*.log
+
+# os / editor
+.DS_Store
+.idea/
+.vscode/
+
+# agent runtime
+agent/logs/
+agent/approvals/

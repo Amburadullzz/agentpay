@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" font-family="ui-sans-serif, -apple-system, Segoe UI, Roboto, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1020"/><stop offset="100%" stop-color="#131a2e"/>
+    </linearGradient>
+    <marker id="arw" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7c8db5"/>
+    </marker>
+    <marker id="arwP" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/>
+    </marker>
+    <marker id="arwG" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4ade80"/>
+    </marker>
+    <marker id="arwR" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#f87171"/>
+    </marker>
+    <marker id="arwY" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#fbbf24"/>
+    </marker>
+    <marker id="arwC" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#38bdf8"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="720" fill="url(#bg)"/>
+
+  <text x="48" y="56" fill="#e8eefc" font-size="29" font-weight="700">AgentPay — policy-bound payments for AI agents</text>
+  <text x="48" y="86" fill="#8fa0c4" font-size="14">QDay Aevum Testnet · chain 44005 · settlement token tUSD8 (6 decimals)</text>
+
+  <!-- on-chain boundary -->
+  <rect x="330" y="112" width="288" height="540" rx="18" fill="#0f1830" stroke="#2a3a5e" stroke-dasharray="6 6"/>
+  <text x="348" y="140" fill="#7c8db5" font-size="12" letter-spacing="1.4">ON-CHAIN · AEVUM</text>
+
+  <!-- Provider -->
+  <rect x="48" y="168" width="230" height="106" rx="14" fill="#16213c" stroke="#3b4d78"/>
+  <text x="70" y="202" fill="#e8eefc" font-size="17" font-weight="600">Provider</text>
+  <text x="70" y="228" fill="#8fa0c4" font-size="13">issues an invoice</text>
+  <text x="70" y="248" fill="#8fa0c4" font-size="13">payee · amount · memo · due</text>
+
+  <!-- InvoiceRegistry -->
+  <rect x="356" y="168" width="238" height="112" rx="14" fill="#16213c" stroke="#4c8dff"/>
+  <text x="378" y="202" fill="#e8eefc" font-size="17" font-weight="600">InvoiceRegistry</text>
+  <text x="378" y="228" fill="#8fa0c4" font-size="13">createInvoice()</text>
+  <text x="378" y="248" fill="#8fa0c4" font-size="13">paid flag · events</text>
+
+  <!-- Agent -->
+  <rect x="48" y="330" width="230" height="150" rx="14" fill="#16213c" stroke="#a78bfa"/>
+  <text x="70" y="364" fill="#e8eefc" font-size="17" font-weight="600">Agent (off-chain)</text>
+  <text x="70" y="390" fill="#8fa0c4" font-size="13">reads invoices</text>
+  <text x="70" y="410" fill="#8fa0c4" font-size="13">checks its mandate</text>
+  <text x="70" y="430" fill="#8fa0c4" font-size="13">simulates, then sends</text>
+  <text x="70" y="458" fill="#c4b5fd" font-size="12">holds no owner rights</text>
+
+  <!-- PolicyVault -->
+  <rect x="356" y="330" width="238" height="182" rx="14" fill="#16213c" stroke="#4ade80"/>
+  <text x="378" y="364" fill="#e8eefc" font-size="17" font-weight="600">PolicyVault</text>
+  <text x="378" y="390" fill="#8fa0c4" font-size="13">per-tx cap</text>
+  <text x="378" y="410" fill="#8fa0c4" font-size="13">24h cap · allowlist</text>
+  <text x="378" y="430" fill="#8fa0c4" font-size="13">1 payment / invoice</text>
+  <text x="378" y="450" fill="#8fa0c4" font-size="13">approval threshold</text>
+  <text x="378" y="470" fill="#8fa0c4" font-size="13">pause switch</text>
+
+  <!-- tUSD8 -->
+  <rect x="356" y="556" width="238" height="86" rx="14" fill="#16213c" stroke="#fbbf24"/>
+  <text x="378" y="588" fill="#e8eefc" font-size="17" font-weight="600">tUSD8</text>
+  <text x="378" y="614" fill="#8fa0c4" font-size="13">ERC-20 · 6 decimals</text>
+
+  <!-- Owner -->
+  <rect x="700" y="290" width="196" height="150" rx="14" fill="#16213c" stroke="#f87171"/>
+  <text x="722" y="324" fill="#e8eefc" font-size="17" font-weight="600">Owner (human)</text>
+  <text x="722" y="350" fill="#8fa0c4" font-size="13">sets the mandate</text>
+  <text x="722" y="370" fill="#8fa0c4" font-size="13">signs approvals</text>
+  <text x="722" y="390" fill="#8fa0c4" font-size="13">pause / unpause</text>
+  <text x="722" y="418" fill="#fca5a5" font-size="12">only key with authority</text>
+
+  <!-- Dashboard -->
+  <rect x="900" y="512" width="252" height="140" rx="14" fill="#16213c" stroke="#38bdf8"/>
+  <text x="922" y="546" fill="#e8eefc" font-size="17" font-weight="600">Dashboard</text>
+  <text x="922" y="572" fill="#8fa0c4" font-size="13">invoices · mandate</text>
+  <text x="922" y="592" fill="#8fa0c4" font-size="13">pending approvals</text>
+  <text x="922" y="612" fill="#8fa0c4" font-size="13">audit trail · pause</text>
+
+  <!-- arrows -->
+  <line x1="278" y1="216" x2="350" y2="222" stroke="#7c8db5" stroke-width="2" marker-end="url(#arw)"/>
+  <text x="281" y="204" fill="#8fa0c4" font-size="11">createInvoice</text>
+
+  <!-- agent reads registry (L-shape) -->
+  <polyline points="163,328 163,300 350,300" fill="none" stroke="#7c8db5" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arw)"/>
+  <text x="172" y="318" fill="#8fa0c4" font-size="11">reads</text>
+
+  <!-- agent pays -->
+  <line x1="278" y1="372" x2="350" y2="384" stroke="#a78bfa" stroke-width="2" marker-end="url(#arwP)"/>
+  <text x="282" y="366" fill="#a78bfa" font-size="11">pay(id)</text>
+
+  <!-- revert -->
+  <line x1="352" y1="500" x2="222" y2="492" stroke="#4ade80" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arwG)"/>
+  <text x="196" y="516" fill="#86efac" font-size="11">revert: reason</text>
+
+  <!-- approval -->
+  <line x1="598" y1="370" x2="694" y2="370" stroke="#f87171" stroke-width="2" marker-end="url(#arwR)"/>
+  <text x="602" y="362" fill="#fca5a5" font-size="11">EIP-712 approval</text>
+
+  <!-- transfer -->
+  <line x1="475" y1="512" x2="475" y2="550" stroke="#fbbf24" stroke-width="2" marker-end="url(#arwY)"/>
+  <text x="484" y="536" fill="#fbbf24" font-size="11">transfer(payee)</text>
+
+  <!-- events to dashboard -->
+  <line x1="598" y1="478" x2="894" y2="556" stroke="#38bdf8" stroke-width="2" marker-end="url(#arwC)"/>
+  <text x="612" y="546" fill="#7dd3fc" font-size="11">events → audit trail</text>
+
+  <text x="48" y="676" fill="#64748b" font-size="12">A compromised agent can only spend inside the mandate — caps, allowlist, idempotency and the pause switch are enforced by the contract, not by the prompt.</text>
+</svg>
