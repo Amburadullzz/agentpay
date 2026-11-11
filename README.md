@@ -156,6 +156,8 @@ cd web && python3 -m http.server 8088
 
 ![Dashboard](assets/dashboard.png)
 
+<p align="center"><img src="assets/dashboard-mobile.png" alt="AgentPay on a phone" width="300" /></p>
+
 The dashboard reads everything from chain (mandate, invoices, receipts, events) and needs no backend.
 Connect an owner wallet to pause the vault or sign approvals.
 
