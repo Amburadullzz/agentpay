@@ -71,6 +71,11 @@
   .log b { color: var(--text); font-weight: 550; }
   .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
   .muted { color: var(--muted); }
+  .stats { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 12px; font-size: 13px; }
+  .stats span { color: var(--muted); }
+  .stats b { color: var(--text); font-variant-numeric: tabular-nums; font-size: 16px; }
+  .stats .warn b { color: var(--amber); }
+  .stats .bad b { color: var(--red); }
   .err { color: var(--red); font-size: 13px; margin-top: 10px; }
   footer { padding: 0 24px 32px; color: #5b6b8c; font-size: 12.5px; }
 </style>
@@ -106,6 +111,7 @@
 
   <section class="card">
     <h2>Invoices</h2>
+    <div id="stats" class="stats"></div>
     <table>
       <thead>
         <tr><th>#</th><th>Payee</th><th class="num">Amount</th><th>State</th><th>Receipt</th><th></th></tr>
@@ -220,6 +226,27 @@ async function loadState() {
     </tr>`;
   });
   $("invoices").innerHTML = rows.join("") || `<tr><td colspan="6" class="muted">no invoices yet</td></tr>`;
+
+  const paidRows = invoices.filter((r) => (Array.isArray(r) ? r[5] : r.paid));
+  const settled = paidRows.reduce((sum, r) => sum + (Array.isArray(r) ? r[2] : r.amount), 0n);
+  const openRows = invoices.filter((r) => {
+    const paid = Array.isArray(r) ? r[5] : r.paid;
+    const cancelled = Array.isArray(r) ? r[6] : r.cancelled;
+    return !paid && !cancelled;
+  });
+  const amountOf = (r) => (Array.isArray(r) ? r[2] : r.amount);
+  const blocked = openRows.filter((r) => amountOf(r) > perTxCap);
+  const pending = openRows.filter(
+    (r) => amountOf(r) <= perTxCap && threshold !== 0n && amountOf(r) >= threshold
+  );
+  const plainOpen = openRows.length - blocked.length - pending.length;
+
+  $("stats").innerHTML = `
+    <span><b>${paidRows.length}</b> paid</span>
+    <span><b>${fmt(settled)}</b> tUSD8 settled</span>
+    <span><b>${plainOpen}</b> open</span>
+    <span class="${pending.length ? "warn" : ""}"><b>${pending.length}</b> awaiting approval</span>
+    <span class="${blocked.length ? "bad" : ""}"><b>${blocked.length}</b> blocked by cap</span>`;
 
   document.querySelectorAll("[data-approve]").forEach((btn) =>
     btn.addEventListener("click", () => approveAndPay(Number(btn.dataset.approve), btn.dataset.amount, btn.dataset.payee))

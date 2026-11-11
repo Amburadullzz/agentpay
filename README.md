@@ -66,7 +66,7 @@ sequenceDiagram
     end
 ```
 
-Design notes: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · contract spec: [`docs/CONTRACTS.md`](docs/CONTRACTS.md) · test matrix: [`docs/TEST-PLAN.md`](docs/TEST-PLAN.md)
+Design notes: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · contract spec: [`docs/CONTRACTS.md`](docs/CONTRACTS.md) · test matrix: [`docs/TEST-PLAN.md`](docs/TEST-PLAN.md) · **threat model**: [`docs/THREAT-MODEL.md`](docs/THREAT-MODEL.md)
 
 ## Safety controls — and the test that proves each one
 
@@ -85,13 +85,14 @@ Design notes: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · contract spec: [
 | Verifiable receipt | `PaymentReceipt` ERC-721 | `test_pay_mintsReceipt` |
 | Only the vault can close an invoice | role gate | `test_onlyVaultCanMarkPaid`, `test_onlyVaultCanMintReceipt` |
 
-`forge test` → **32 passing**, including fuzz tests over the cap boundaries and replay paths.
+`forge test` → **57 passing**, including fuzz tests over the cap boundaries and replay paths.
+`forge coverage` → **100% of lines** in `PolicyVault`, `InvoiceRegistry` and `PaymentReceipt` (96% statements, 82% branches).
 
 ## Repository layout
 
 ```
 src/           PolicyVault, InvoiceRegistry, PaymentReceipt (Solidity 0.8.24)
-test/          32 Foundry tests, including fuzz + a 6-decimal token mock
+test/          57 Foundry tests, including fuzz + a 6-decimal token mock
 agent/         Python agent (web3.py), owner console, provider console
 web/           static dashboard (viem, no build step)
 docs/          architecture, contract spec, test plan, demo script
@@ -154,6 +155,7 @@ Full script and judge-facing checklist: [`docs/DEMO-AND-SUBMISSION.md`](docs/DEM
 - **Testnet only.** tUSD8 has no value; nothing here moves real funds.
 - **The agent's honesty is not assumed.** It is allowed to be wrong, greedy or compromised — the contract still holds. What the agent *does* control is which invoice to attempt, and that is logged.
 - **Rolling window is a fixed 24h bucket**, not a sliding window. Documented in `_rollWindow`.
+- **Retries are safe because payments are idempotent** — a timeout retry either lands once or reverts with `AlreadyPaid`.
 
 ## Roadmap
 

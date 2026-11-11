@@ -348,18 +348,42 @@ class AgentPay:
         ok, reason = self.simulate_pay(invoice_id)
         if not ok:
             raise RuntimeError(f"simulation rejected invoice {invoice_id}: {reason}")
-        tx = self.vault.functions.pay(invoice_id).build_transaction(self._tx_params())
-        signed = self.w3.eth.account.sign_transaction(tx, self.account.key)
-        h = self.w3.eth.send_raw_transaction(signed.raw_transaction)
-        receipt = self.w3.eth.wait_for_transaction_receipt(h, timeout=120)
-        if receipt.status != 1:
-            raise RuntimeError(f"tx reverted: {h.hex()}")
-        return h.hex()
+        return self._send(lambda: self.vault.functions.pay(invoice_id))
+
+    def pay_with_approval(self, invoice_id: int, deadline: int, signature: bytes) -> str:
+        return self._send(
+            lambda: self.vault.functions.payWithApproval(invoice_id, deadline, signature)
+        )
+
+    def _send(self, build, attempts: int = 4) -> str:
+        """Submit a transaction with retry/backoff on transient RPC failures.
+
+        Idempotency is the contract's job (an invoice pays once), so a retry after an
+        ambiguous timeout is safe: either the first transaction landed and the second
+        reverts with AlreadyPaid, or it never landed and this one goes through.
+        """
+        last_error: Exception | None = None
+        for attempt in range(attempts):
+            try:
+                tx = build().build_transaction(self._tx_params())
+                signed = self.w3.eth.account.sign_transaction(tx, self.account.key)
+                tx_hash = self.w3.eth.send_raw_transaction(signed.raw_transaction)
+                receipt = self.w3.eth.wait_for_transaction_receipt(tx_hash, timeout=180)
+                if receipt.status != 1:
+                    raise RuntimeError(f"tx reverted: {tx_hash.hex()}")
+                return tx_hash.hex()
+            except Exception as exc:  # noqa: BLE001
+                last_error = exc
+                if not _is_transient(exc):
+                    raise
+                delay = 2**attempt
+                time.sleep(delay)
+        raise RuntimeError(f"giving up after {attempts} attempts: {last_error}")
 
     def _tx_params(self) -> dict:
         return {
             "from": self.agent,
-            "nonce": self.w3.eth.get_transaction_count(self.agent),
+            "nonce": self.w3.eth.get_transaction_count(self.agent, "pending"),
             "chainId": self.w3.eth.chain_id,
             "gas": 500_000,
             "maxFeePerGas": self.w3.eth.gas_price * 2,
@@ -374,6 +398,29 @@ class AgentPay:
         self.log_path.parent.mkdir(parents=True, exist_ok=True)
         with self.log_path.open("a", encoding="utf-8") as fh:
             fh.write(decision.to_json() + "\n")
+
+
+TRANSIENT_MARKERS = (
+    "nonce too low",
+    "already known",
+    "replacement transaction underpriced",
+    "timeout",
+    "timed out",
+    "connection",
+    "temporarily unavailable",
+    "502",
+    "503",
+    "504",
+    "429",
+)
+
+
+def _is_transient(exc: Exception) -> bool:
+    """A revert is final; an RPC hiccup is worth another attempt."""
+    text = str(exc).lower()
+    if "execution reverted" in text or "insufficient funds" in text:
+        return False
+    return any(marker in text for marker in TRANSIENT_MARKERS)
 
 
 def _clean_error(exc: Exception) -> str:

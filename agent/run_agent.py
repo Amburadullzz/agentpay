@@ -36,15 +36,9 @@ def _load_approval(invoice_id: int) -> dict | None:
 
 def _submit_approval(agent, invoice_id: int, approval: dict) -> str:
     """Submit a payment the owner already signed off-chain."""
-    tx = agent.vault.functions.payWithApproval(
+    return agent.pay_with_approval(
         invoice_id, approval["deadline"], bytes.fromhex(approval["sig"])
-    ).build_transaction(agent._tx_params())
-    signed = agent.w3.eth.account.sign_transaction(tx, agent.account.key)
-    h = agent.w3.eth.send_raw_transaction(signed.raw_transaction)
-    receipt = agent.w3.eth.wait_for_transaction_receipt(h, timeout=120)
-    if receipt.status != 1:
-        raise RuntimeError(f"approval tx reverted: {h.hex()}")
-    return h.hex()
+    )
 
 
 def run_once(agent, dry_run: bool = False) -> list:
