@@ -51,8 +51,8 @@ NARRATION = {
     ),
     "06-safety": (
         "None of this is the agent being polite. Every control is a require in the contract, and every control has a "
-        "test named after it. Thirty two tests pass, including fuzz tests over the cap boundaries, the replay paths, "
-        "and per selector access control."
+        "test named after it. Fifty seven tests pass, with one hundred percent line coverage on all three contracts, "
+        "including fuzz tests over the cap boundaries and per selector access control."
     ),
     "07-closing": (
         "AgentPay. A compromised agent can only spend inside its mandate. Contracts, agent, dashboard and tests are "

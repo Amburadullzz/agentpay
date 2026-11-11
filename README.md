@@ -104,9 +104,11 @@ assets/        architecture diagram, dashboard screenshot
 ### Contracts
 
 ```bash
-forge install
+forge install foundry-rs/forge-std OpenZeppelin/openzeppelin-contracts@v5.1.0
 forge test
 ```
+
+Verified from a fresh clone: dependencies resolve, **57 tests pass**.
 
 ### Agent + consoles
 

@@ -216,7 +216,7 @@ def scene_safety():
         y += 62
 
     panel(d, 120, 760, W - 240, 180)
-    d.text((150, 790), "forge test  →  32 passed, 0 failed", font=mono(40), fill=GREEN)
+    d.text((150, 790), "forge test  →  57 passed  ·  100% line coverage", font=mono(38), fill=GREEN)
     d.text((150, 856), "includes fuzz tests over cap boundaries, replay paths and per-selector access control",
            font=font(26), fill=MUTED)
     save(img, "06-safety.png")
