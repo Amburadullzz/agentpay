@@ -79,6 +79,22 @@ def main() -> int:
     print(f"owner   {owner}\n")
 
     results: list[tuple[str, str, str, bool]] = []
+    provider = Account.from_key(os.environ["PROVIDER_PRIVATE_KEY"])
+
+    def create_invoice(payee: str, amount: int) -> int:
+        """Issue a fixture invoice from the provider so every attack has something to hit."""
+        fn = registry.functions.createInvoice(
+            Web3.to_checksum_address(payee), amount, Web3.keccak(text="attack fixture"), 0
+        )
+        tx = fn.build_transaction({
+            "from": provider.address, "nonce": w3.eth.get_transaction_count(provider.address, "pending"),
+            "chainId": w3.eth.chain_id, "gas": 300_000,
+            "maxFeePerGas": w3.eth.gas_price * 2, "maxPriorityFeePerGas": w3.eth.gas_price,
+        })
+        signed = w3.eth.account.sign_transaction(tx, provider.key)
+        h = w3.eth.send_raw_transaction(signed.raw_transaction)
+        w3.eth.wait_for_transaction_receipt(h, timeout=180)
+        return registry.functions.invoiceCount().call()
 
     def attempt(label: str, expected: str, fn) -> None:
         try:
@@ -102,12 +118,11 @@ def main() -> int:
             rogue_invoice = i
             break
 
-    if rogue_invoice:
-        attempt(f"pay invoice #{rogue_invoice} to a non-allowlisted payee", "PayeeNotAllowed",
-                lambda: vault.functions.pay(rogue_invoice))
-    else:
-        results.append(("pay to non-allowlisted payee", "PayeeNotAllowed",
-                        "skipped: no such open invoice", True))
+    if not rogue_invoice:
+        rogue_invoice = create_invoice(payee_rogue, 100_000)
+        print(f"fixture: created invoice #{rogue_invoice} to a non-allowlisted payee")
+    attempt(f"pay invoice #{rogue_invoice} to a non-allowlisted payee", "PayeeNotAllowed",
+            lambda: vault.functions.pay(rogue_invoice))
 
     # 2. pay an invoice above the per-transaction cap
     over_cap = None
@@ -117,11 +132,11 @@ def main() -> int:
         if not inv[5] and not inv[6] and inv[2] > cap and vault.functions.isPayeeAllowed(inv[1]).call():
             over_cap = i
             break
-    if over_cap:
-        attempt(f"pay invoice #{over_cap} over the per-tx cap ({fmt(cap)})", "CapExceeded",
-                lambda: vault.functions.pay(over_cap))
-    else:
-        results.append(("pay above per-tx cap", "CapExceeded", "skipped: no such invoice", True))
+    if not over_cap:
+        over_cap = create_invoice(provider.address, min(int(cap) * 2, 10**9))
+        print(f"fixture: created invoice #{over_cap} above the per-tx cap")
+    attempt(f"pay invoice #{over_cap} over the per-tx cap ({fmt(cap)})", "CapExceeded",
+            lambda: vault.functions.pay(over_cap))
 
     # 3. replay an already-paid invoice
     paid_invoice = None
@@ -159,6 +174,9 @@ def main() -> int:
                 and vault.functions.isPayeeAllowed(inv[1]).call()):
             approval_invoice = i
             break
+    if not approval_invoice:
+        approval_invoice = create_invoice(provider.address, int(threshold))
+        print(f"fixture: created invoice #{approval_invoice} above the approval threshold")
     if approval_invoice:
         inv = registry.functions.getInvoice(approval_invoice).call()
         nonce = vault.functions.mandateOf(agent).call()[7]
@@ -170,8 +188,7 @@ def main() -> int:
         sig = Account.unsafe_sign_hash(bytes(digest), rogue.key).signature
         attempt(f"pay invoice #{approval_invoice} with a forged approval", "BadApproval",
                 lambda: vault.functions.payWithApproval(approval_invoice, deadline, sig))
-    else:
-        results.append(("forged approval", "BadApproval", "skipped: no invoice in range", True))
+
 
     # ---------------------------------------------------------------- report
     print(f"\n{'attack':<52} {'expected':<26} {'result'}")

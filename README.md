@@ -181,6 +181,17 @@ Connect an owner wallet to pause the vault or sign approvals.
 
 **Video walkthrough (2:59):** https://amburadullzz.github.io/agentpay/agentpay-demo.mp4 — narrated, built from the real testnet run.
 
+### Replay the whole demo yourself
+
+```bash
+./demo/run_demo.sh --fresh     # deploy a new vault, fund it, run all five beats + the attacks
+./demo/run_demo.sh             # same beats against the deployment in .env
+```
+
+`--fresh` needs tQDAY for gas and 0.55 tUSD8 for the vault float; the script refuses to start if the
+owner wallet is short, so it cannot half-run. Everything after that is automatic: deploy, allowlist,
+mandate, five beats, then the eight attacks.
+
 Full script and judge-facing checklist: [`docs/DEMO-AND-SUBMISSION.md`](docs/DEMO-AND-SUBMISSION.md)
 
 ## Who pays for this, and how it gets to mainnet
