@@ -96,6 +96,7 @@ VAULT_ABI = [
         "outputs": [{"name": "", "type": "bool"}],
     },
     {"name": "paused", "type": "function", "stateMutability": "view", "inputs": [], "outputs": [{"name": "", "type": "bool"}]},
+    {"name": "owner", "type": "function", "stateMutability": "view", "inputs": [], "outputs": [{"name": "", "type": "address"}]},
     {
         "name": "pay",
         "type": "function",
@@ -150,6 +151,13 @@ VAULT_ABI = [
             {"name": "payee", "type": "address"},
             {"name": "allowed", "type": "bool"},
         ],
+        "outputs": [],
+    },
+    {
+        "name": "withdraw",
+        "type": "function",
+        "stateMutability": "nonpayable",
+        "inputs": [{"name": "amount", "type": "uint96"}],
         "outputs": [],
     },
     {

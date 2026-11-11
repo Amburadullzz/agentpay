@@ -1,5 +1,9 @@
 # AgentPay
 
+<p align="center">
+  <img src="assets/logo-512.png" alt="AgentPay" width="112" />
+</p>
+
 **Policy-bound stablecoin payments for AI agents.**
 An agent can pay invoices — but never more than its on-chain mandate allows.
 
@@ -86,6 +90,23 @@ Design notes: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · contract spec: [
 | Least privilege | agent key ≠ owner key | `test_agentCannotSetMandate`, `…Pause`, `…Withdraw`, `…AllowPayee` |
 | Verifiable receipt | `PaymentReceipt` ERC-721 | `test_pay_mintsReceipt` |
 | Only the vault can close an invoice | role gate | `test_onlyVaultCanMarkPaid`, `test_onlyVaultCanMintReceipt` |
+
+### We attacked it ourselves
+
+`python agent/attack_sim.py` runs eight attacks **using the agent key as the attacker** against the live vault. All eight are refused, and each refusal is the contract's own error:
+
+| Attack | Contract answered |
+| --- | --- |
+| pay a non-allowlisted address | `PayeeNotAllowed` |
+| pay over the per-transaction cap | `CapExceeded` |
+| replay an invoice already paid | `AlreadyPaid` |
+| raise its own limits | `OwnableUnauthorizedAccount` |
+| pause or unpause the vault | `OwnableUnauthorizedAccount` |
+| withdraw the balance | `OwnableUnauthorizedAccount` |
+| whitelist an attacker address | `OwnableUnauthorizedAccount` |
+| submit a forged approval | `BadApproval` |
+
+`8/8 attacks refused for the expected reason` — full run and repro steps in [`docs/ATTACK-EVIDENCE.md`](docs/ATTACK-EVIDENCE.md).
 
 `forge test` → **57 passing**, including fuzz tests over the cap boundaries and replay paths.
 `forge coverage` → **100% of lines** in `PolicyVault`, `InvoiceRegistry` and `PaymentReceipt` (96% statements, 82% branches).

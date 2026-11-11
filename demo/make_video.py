@@ -49,12 +49,18 @@ NARRATION = {
         "threshold: the agent stopped, the owner signed off chain, the payment landed, and the nonce was consumed. "
         "Replaying a paid invoice reverts. And with the vault paused, the agent is blocked immediately."
     ),
-    "06-safety": (
+    "06-attacks": (
+        "Then we attacked it ourselves, using the agent key as the attacker. Pay a non allowlisted "
+        "address: blocked. Pay over the per transaction cap: blocked. Replay an invoice already paid: "
+        "blocked. Raise its own limits, pause the vault, withdraw the balance: blocked, blocked, "
+        "blocked. Eight attacks, eight refusals, and every reason you see is the contract's own revert."
+    ),
+    "07-safety": (
         "None of this is the agent being polite. Every control is a require in the contract, and every control has a "
         "test named after it. Fifty seven tests pass, with one hundred percent line coverage on all three contracts, "
         "including fuzz tests over the cap boundaries and per selector access control."
     ),
-    "07-closing": (
+    "08-closing": (
         "AgentPay. A compromised agent can only spend inside its mandate. Contracts, agent, dashboard and tests are "
         "in the repository. Thank you."
     ),

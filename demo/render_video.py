@@ -219,7 +219,7 @@ def scene_safety():
     d.text((150, 790), "forge test  →  57 passed  ·  100% line coverage", font=mono(38), fill=GREEN)
     d.text((150, 856), "includes fuzz tests over cap boundaries, replay paths and per-selector access control",
            font=font(26), fill=MUTED)
-    save(img, "06-safety.png")
+    save(img, "07-safety.png")
 
 
 def scene_closing():
@@ -238,7 +238,36 @@ def scene_closing():
     d.text((400, y + 100), dep["contracts"]["receipts"]["address"], font=mono(28), fill=TEXT)
 
     d.text((120, 900), "github.com/Amburadullzz/agentpay", font=mono(32), fill=BLUE)
-    save(img, "07-closing.png")
+    save(img, "08-closing.png")
+
+
+def scene_attacks():
+    img, d = canvas()
+    kicker(d, "we attacked it ourselves", RED)
+    d.text((120, 140), "Eight attacks. Eight refusals.", font=font(56, True), fill=TEXT)
+
+    rows = [
+        ("pay a non-allowlisted address", "PayeeNotAllowed"),
+        ("pay over the per-transaction cap", "CapExceeded"),
+        ("replay an invoice already paid", "AlreadyPaid"),
+        ("raise its own limits", "OwnableUnauthorizedAccount"),
+        ("pause or unpause the vault", "OwnableUnauthorizedAccount"),
+        ("withdraw the balance", "OwnableUnauthorizedAccount"),
+        ("whitelist an attacker address", "OwnableUnauthorizedAccount"),
+        ("submit a forged approval", "BadApproval"),
+    ]
+    y = 280
+    for i, (attack, error) in enumerate(rows, 1):
+        d.rounded_rectangle([120, y, W - 120, y + 76], radius=12, fill=PANEL, outline=(38, 50, 78), width=2)
+        d.text((150, y + 24), f"{i}", font=font(26, True), fill=MUTED)
+        d.text((196, y + 22), attack, font=font(28), fill=TEXT)
+        d.text((1160, y + 22), "BLOCKED", font=font(24, True), fill=GREEN)
+        d.text((1300, y + 24), error, font=mono(22), fill=RED)
+        y += 88
+
+    d.text((120, y + 24), "run with the agent key as the attacker — every reason above is the contract's own revert",
+           font=font(24), fill=MUTED)
+    save(img, "06-attacks.png")
 
 
 if __name__ == "__main__":
@@ -247,5 +276,6 @@ if __name__ == "__main__":
     scene_architecture()
     scene_dashboard()
     scene_beats()
+    scene_attacks()
     scene_safety()
     scene_closing()

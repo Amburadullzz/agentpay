@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d1428"/>
+      <stop offset="100%" stop-color="#1b2b4a"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- shield: the mandate that lives outside the agent -->
+  <path d="M256 84 L400 144 V276 C400 356 334 414 256 444 C178 414 112 356 112 276 V144 Z"
+        fill="#7cb0ff" fill-opacity="0.20" stroke="#7cb0ff" stroke-width="20" stroke-linejoin="round"/>
+
+  <!-- check: a payment that passed the policy -->
+  <path d="M186 262 L238 314 L330 210" fill="none" stroke="#4ade80" stroke-width="34"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
