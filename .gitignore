@@ -38,3 +38,6 @@ agent/approvals/
 demo/frames/
 demo/segments/
 demo/audio/
+
+# the video is published on the gh-pages branch, not in main
+web/agentpay-demo.mp4
