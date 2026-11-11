@@ -65,7 +65,8 @@
   .row .v { font-variant-numeric: tabular-nums; }
   .big { font-size: 26px; font-weight: 650; letter-spacing: -0.5px; }
   table { width: 100%; border-collapse: collapse; }
-  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); font-size: 14px; white-space: nowrap; }
+  td.mono { overflow: hidden; text-overflow: ellipsis; }
   th { color: var(--muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
   td.num { text-align: right; font-variant-numeric: tabular-nums; }
   .pill { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
