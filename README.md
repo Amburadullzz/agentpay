@@ -80,7 +80,7 @@ sequenceDiagram
     end
 ```
 
-Design notes: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · contract spec: [`docs/CONTRACTS.md`](docs/CONTRACTS.md) · test matrix: [`docs/TEST-PLAN.md`](docs/TEST-PLAN.md) · **threat model**: [`docs/THREAT-MODEL.md`](docs/THREAT-MODEL.md)
+Design notes: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · contract spec: [`docs/CONTRACTS.md`](docs/CONTRACTS.md) · test matrix: [`docs/TEST-PLAN.md`](docs/TEST-PLAN.md) · **threat model**: [`docs/THREAT-MODEL.md`](docs/THREAT-MODEL.md) · **security review**: [`docs/SECURITY-REVIEW.md`](docs/SECURITY-REVIEW.md)
 
 ## Safety controls — and the test that proves each one
 
