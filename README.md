@@ -213,6 +213,29 @@ Full script and judge-facing checklist: [`docs/DEMO-AND-SUBMISSION.md`](docs/DEM
 
 **What is deliberately not claimed:** no revenue model beyond a per-settlement fee taken by whoever deploys the vault, and no traction numbers — this is a testnet build with a working end-to-end flow, not a business with users.
 
+## Batch payroll — the same vault, a second workflow
+
+Payroll is not a separate product: it is the invoice flow repeated per payee, with every check intact.
+`agent/payroll.py` reads a CSV, issues one invoice per payee, then runs a single agent pass.
+
+```bash
+python agent/payroll.py --csv demo/payroll.csv --dry-run    # decide only
+python agent/payroll.py --csv demo/payroll.csv --allowlist --execute
+```
+
+```
+payroll: 3 payees · total 0.15 tUSD8
+  ✓ rafi   0.05 tUSD8  PAY  PAID
+  ✓ nadia  0.05 tUSD8  PAY  PAID
+  ✓ bima   0.05 tUSD8  PAY  PAID
+3/3 paid · 0.15 tUSD8 settled
+```
+
+Run it before `--allowlist` and every line comes back `REFUSE · PAYEE_NOT_ALLOWED` — the batch cannot
+bypass the allowlist, it only repeats a payment that is allowed. A payee over the per-transaction cap
+fails on its own line while the rest of the payroll still settles, and the daily budget stops the run
+where it runs out.
+
 ## Assumptions and limitations
 
 - **Single owner key.** No multisig in v1; a 2-of-3 owner is a natural next step and does not change the agent-facing surface.
