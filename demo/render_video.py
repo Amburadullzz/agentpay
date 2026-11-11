@@ -219,7 +219,7 @@ def scene_safety():
     d.text((150, 790), "forge test  →  57 passed  ·  100% line coverage", font=mono(38), fill=GREEN)
     d.text((150, 856), "includes fuzz tests over cap boundaries, replay paths and per-selector access control",
            font=font(26), fill=MUTED)
-    save(img, "07-safety.png")
+    save(img, "08-safety.png")
 
 
 def scene_closing():
@@ -238,7 +238,7 @@ def scene_closing():
     d.text((400, y + 100), dep["contracts"]["receipts"]["address"], font=mono(28), fill=TEXT)
 
     d.text((120, 900), "github.com/Amburadullzz/agentpay", font=mono(32), fill=BLUE)
-    save(img, "08-closing.png")
+    save(img, "09-closing.png")
 
 
 def scene_attacks():
@@ -267,7 +267,35 @@ def scene_attacks():
 
     d.text((120, y + 24), "run with the agent key as the attacker — every reason above is the contract's own revert",
            font=font(24), fill=MUTED)
-    save(img, "06-attacks.png")
+    save(img, "07-attacks.png")
+
+
+def scene_payroll():
+    img, d = canvas()
+    kicker(d, "second workflow on the same vault", VIOLET)
+    d.text((120, 140), "Payroll is the same flow, repeated.", font=font(54, True), fill=TEXT)
+
+    d.text((120, 250), "before the owner allowlists the payees", font=font(26), fill=MUTED)
+    y = 292
+    for name, amt in (("rafi", "0.05"), ("nadia", "0.05"), ("bima", "0.05")):
+        d.rounded_rectangle([120, y, W - 120, y + 70], radius=12, fill=PANEL, outline=(38, 50, 78), width=2)
+        d.text((150, y + 20), name, font=font(28), fill=TEXT)
+        d.text((330, y + 20), amt, font=mono(26), fill=MUTED)
+        d.text((1160, y + 20), "REFUSE", font=font(24, True), fill=RED)
+        d.text((1290, y + 22), "PAYEE_NOT_ALLOWED", font=mono(22), fill=RED)
+        y += 82
+
+    d.text((120, y + 16), "after --allowlist, one agent pass", font=font(26), fill=MUTED)
+    y += 60
+    for name, amt in (("rafi", "0.05"), ("nadia", "0.05"), ("bima", "0.05")):
+        d.rounded_rectangle([120, y, W - 120, y + 70], radius=12, fill=PANEL, outline=(30, 70, 48), width=2)
+        d.text((150, y + 20), name, font=font(28), fill=TEXT)
+        d.text((330, y + 20), amt, font=mono(26), fill=MUTED)
+        d.text((1160, y + 20), "PAID", font=font(24, True), fill=GREEN)
+        d.text((1290, y + 22), "3/3 settled · 0.15 tUSD8", font=mono(22), fill=GREEN)
+        y += 82
+
+    save(img, "06-payroll.png")
 
 
 if __name__ == "__main__":
@@ -276,6 +304,7 @@ if __name__ == "__main__":
     scene_architecture()
     scene_dashboard()
     scene_beats()
+    scene_payroll()
     scene_attacks()
     scene_safety()
     scene_closing()

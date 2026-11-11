@@ -10,7 +10,7 @@ An agent can pay invoices — but never more than its on-chain mandate allows.
 Built for **Aevum Builder Challenge #1** on QDay Aevum Testnet (chain 44005), settling in **tUSD8**.
 Track: **Native AI Assistants**.
 
-**Live dashboard:** https://amburadullzz.github.io/agentpay/ · **Video (2:59):** https://amburadullzz.github.io/agentpay/agentpay-demo.mp4
+**Live dashboard:** https://amburadullzz.github.io/agentpay/ · **Video (4:00):** https://amburadullzz.github.io/agentpay/agentpay-demo.mp4
 
 ![Architecture](assets/architecture.png)
 
@@ -18,7 +18,7 @@ Track: **Native AI Assistants**.
 
 ## For judges — 60 seconds
 
-1. **Watch** the 3:32 walkthrough: five beats executed on the real testnet, then eight attacks against our own vault — https://amburadullzz.github.io/agentpay/agentpay-demo.mp4
+1. **Watch** the 4:00 walkthrough: five beats executed on the real testnet, then eight attacks against our own vault — https://amburadullzz.github.io/agentpay/agentpay-demo.mp4
 2. **Open** the live dashboard: https://amburadullzz.github.io/agentpay/ — mandate, invoices, receipts and the agent's own decision log, all read from chain.
 3. **Check the evidence**: [`docs/EVIDENCE.md`](docs/EVIDENCE.md) (every transaction) and [`docs/ATTACK-EVIDENCE.md`](docs/ATTACK-EVIDENCE.md) (8/8 attacks refused).
 4. **Run it**: `forge install foundry-rs/forge-std OpenZeppelin/openzeppelin-contracts@v5.1.0 && forge test` → 57 tests, 100% line coverage.
@@ -179,7 +179,7 @@ Connect an owner wallet to pause the vault or sign approvals.
 | 4 | Replay of invoice #1 | reverts `AlreadyPaid` |
 | 5 | Vault paused, invoice arrives | refused `VAULT_PAUSED`; after resume the same invoice pays |
 
-**Video walkthrough (2:59):** https://amburadullzz.github.io/agentpay/agentpay-demo.mp4 — narrated, built from the real testnet run.
+**Video walkthrough (4:00):** https://amburadullzz.github.io/agentpay/agentpay-demo.mp4 — narrated, built from the real testnet run.
 
 ### Replay the whole demo yourself
 
