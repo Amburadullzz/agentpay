@@ -150,6 +150,25 @@ Connect an owner wallet to pause the vault or sign approvals.
 
 Full script and judge-facing checklist: [`docs/DEMO-AND-SUBMISSION.md`](docs/DEMO-AND-SUBMISSION.md)
 
+## Who pays for this, and how it gets to mainnet
+
+**The buyer is the agent platform, not the end user.** Three groups already have the problem and a budget:
+
+1. **Agent platforms and frameworks** (Eliza, AgentKit, custom orchestrators) that let an agent transact. They need a spend-control primitive they can point at, and "we have policy vaults" is a feature they can sell to their own users.
+2. **Fintechs and payment processors** onboarding agents as payers. They already run invoice settlement; the missing piece is a mandate an agent cannot exceed, which their compliance team can read on chain.
+3. **Merchants and service providers** that invoice other agents (compute, data, API calls). They do not care how the payment is authorised; they care that it settles and that the receipt is verifiable.
+
+**Distribution.** The realistic wedge is the QDay ecosystem itself: the platform is building agentic payments, so a policy vault is a reference implementation they can point to. From there, the integration surface is small — a provider needs one `createInvoice` call, an agent needs `pay`, and the mandate is set once by the owner.
+
+**Path to mainnet.**
+
+1. **Audit the two contracts.** ~300 lines of Solidity with 100% line coverage is a tractable audit, not a rewrite.
+2. **Swap tUSD8 for a real stablecoin** and keep the same interface — the vault is token-agnostic.
+3. **Owner becomes a multisig** (Safe) and the agent becomes an ERC-4337 session key, so the agent holds no key with standalone authority.
+4. **Receipts become the audit artifact** merchants show their accountant; the NFT metadata is already on chain.
+
+**What is deliberately not claimed:** no revenue model beyond a per-settlement fee taken by whoever deploys the vault, and no traction numbers — this is a testnet build with a working end-to-end flow, not a business with users.
+
 ## Assumptions and limitations
 
 - **Single owner key.** No multisig in v1; a 2-of-3 owner is a natural next step and does not change the agent-facing surface.
