@@ -16,6 +16,14 @@ Track: **Native AI Assistants**.
 
 ---
 
+## For judges — 60 seconds
+
+1. **Watch** the 3:32 walkthrough: five beats executed on the real testnet, then eight attacks against our own vault — https://amburadullzz.github.io/agentpay/agentpay-demo.mp4
+2. **Open** the live dashboard: https://amburadullzz.github.io/agentpay/ — mandate, invoices, receipts and the agent's own decision log, all read from chain.
+3. **Check the evidence**: [`docs/EVIDENCE.md`](docs/EVIDENCE.md) (every transaction) and [`docs/ATTACK-EVIDENCE.md`](docs/ATTACK-EVIDENCE.md) (8/8 attacks refused).
+4. **Run it**: `forge install foundry-rs/forge-std OpenZeppelin/openzeppelin-contracts@v5.1.0 && forge test` → 57 tests, 100% line coverage.
+5. **The one thing to remember**: the agent key holds no owner rights. Caps, allowlist, idempotency, approval threshold, expiry and the pause switch are enforced by the contract — a compromised agent can only spend inside its mandate.
+
 ## The problem
 
 Agents can already decide to buy something. Giving one a funded wallet means trusting it with unbounded authority — one hallucinated amount, one prompt injection, and the money is gone.
