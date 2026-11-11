@@ -67,6 +67,15 @@ payment refused for exceeding the per-transaction cap, an approval above the thr
 off-chain and submitted by the agent, a replay attempt that reverts, and a kill switch that
 blocks the agent immediately. All transactions are linked in docs/EVIDENCE.md.
 
+WE ATTACKED OUR OWN VAULT
+
+agent/attack_sim.py runs eight attacks using the agent key as the attacker, against the live
+vault: pay a non-allowlisted address, pay over the per-transaction cap, replay a paid invoice,
+raise its own limits, pause or unpause, withdraw the balance, whitelist an attacker address,
+submit a forged approval. All eight are refused, and every refusal is the contract's own error
+(PayeeNotAllowed, CapExceeded, AlreadyPaid, OwnableUnauthorizedAccount, BadApproval).
+See docs/ATTACK-EVIDENCE.md.
+
 ENGINEERING
 
 - 3 contracts, Solidity 0.8.24, Foundry
