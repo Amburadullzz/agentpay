@@ -141,6 +141,8 @@
   <section class="card">
     <h2>On-chain audit trail</h2>
     <div class="log" id="log"><div class="muted">loading…</div></div>
+    <h2 style="margin-top:18px">Agent decisions <span class="muted" style="text-transform:none;letter-spacing:0">(off-chain log, including refusals)</span></h2>
+    <div class="log" id="agentlog"><div class="muted">loading…</div></div>
   </section>
 </main>
 
@@ -386,9 +388,30 @@ async function togglePause(action) {
   }
 }
 
+async function loadAgentLog() {
+  try {
+    const res = await fetch(`decisions.jsonl?ts=${Math.floor(Date.now() / 60000)}`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    const rows = text.trim().split("\n").filter(Boolean).map((line) => JSON.parse(line));
+    const recent = rows.slice(-12).reverse();
+    const colour = { PAY: "var(--green)", ASK_APPROVAL: "var(--amber)", REFUSE: "var(--red)", SKIP: "var(--muted)" };
+    $("agentlog").innerHTML = recent.map((r) => {
+      const t = new Date(r.at * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const tx = r.tx_hash ? ` · <a href="${CHAIN.blockExplorers.default.url}/tx/${r.tx_hash}" target="_blank" rel="noreferrer">tx</a>` : "";
+      return `<div><span class="mono">${t}</span> · <b style="color:${colour[r.action] || "inherit"}">${r.action}</b> #${r.invoice_id} · ${fmt(r.amount)} tUSD8 · ${r.reason}${tx}</div>`;
+    }).join("") || `<div class="muted">no decisions logged yet</div>`;
+  } catch (err) {
+    $("agentlog").innerHTML = `<div class="muted">agent log not published: ${String(err.message || err)}</div>`;
+  }
+}
+
 $("connect").addEventListener("click", connect);
 $("pause").addEventListener("click", () => togglePause("pause"));
 $("unpause").addEventListener("click", () => togglePause("unpause"));
+
+loadAgentLog();
+setInterval(loadAgentLog, 60000);
 
 loadState().catch((err) => {
   $("invoices").innerHTML = `<tr><td colspan="6" class="err">${String(err.message || err)}</td></tr>`;
