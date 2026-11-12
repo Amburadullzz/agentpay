@@ -18,7 +18,7 @@ Track: **Native AI Assistants**.
 
 ## For judges — 60 seconds
 
-1. **Watch** the 4:00 walkthrough: five beats executed on the real testnet, then eight attacks against our own vault — https://amburadullzz.github.io/agentpay/agentpay-demo.mp4
+1. **Watch** the 4:00 walkthrough: five beats on the real testnet, a payroll run, then eight attacks against our own vault — https://amburadullzz.github.io/agentpay/agentpay-demo.mp4
 2. **Open** the live dashboard: https://amburadullzz.github.io/agentpay/ — mandate, invoices, receipts and the agent's own decision log, all read from chain.
 3. **Check the evidence**: [`docs/EVIDENCE.md`](docs/EVIDENCE.md) (every transaction) and [`docs/ATTACK-EVIDENCE.md`](docs/ATTACK-EVIDENCE.md) (8/8 attacks refused).
 4. **Run it**: `forge install foundry-rs/forge-std OpenZeppelin/openzeppelin-contracts@v5.1.0 && forge test` → 57 tests, 100% line coverage.

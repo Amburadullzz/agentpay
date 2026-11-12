@@ -105,7 +105,7 @@ AI Agents, Stablecoin, Payments, Solidity, Foundry, Smart Accounts, Agentic Comm
 | Field | Value |
 | --- | --- |
 | GitHub / GitLab | `https://github.com/Amburadullzz/agentpay` |
-| Demo video | upload `demo/agentpay-demo.mp4` (2:59) to YouTube unlisted or Loom, paste the URL |
+| Demo video | upload `demo/agentpay-demo.mp4` (4:00) to YouTube unlisted or Loom, paste the URL |
 | Live demo | optional: the GitHub Pages URL once the workflow runs, or the repo README screenshots |
 
 ## Pre-submit checklist
